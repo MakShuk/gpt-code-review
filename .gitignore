@@ -1,0 +1,38 @@
+# Directories
+node_modules/
+dist/
+build/
+coverage/
+config/
+voices/
+txt/
+
+# Environment files
+.env
+
+# Logs
+logs/
+*.log
+
+# Dependency lock files
+package-lock.json
+yarn.lock
+
+# Editor files
+.idea/
+*.drawio
+*.dtmp
+.project
+.classpath
+*.launch
+.settings/
+*.sublime-workspace
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+#media 
+.ogg
+.mp3
+
