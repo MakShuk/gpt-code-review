@@ -5,7 +5,7 @@ import {
 	OpenAIApi,
 } from 'openai';
 //import config from 'config';
-import { LoggerService } from '../logger/logger.service';
+import { LoggerService } from '../services/logger/logger.service';
 import 'dotenv/config';
 
 //config.get('CHATGPT_TOKEN')
@@ -28,8 +28,9 @@ class OpenAi {
 			const responce = await this.openai.createChatCompletion({
 				model: 'gpt-3.5-turbo-16k',
 				messages,
-				max_tokens: 150,
-				temperature: 0.5,
+				temperature: 0.8,
+				/* max_tokens: 150,
+				temperature: 0.5, */
 			});
 			return responce.data.choices[0].message;
 		} catch (e) {
