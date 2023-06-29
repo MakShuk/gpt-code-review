@@ -12,10 +12,9 @@ export class CodeReviewService {
 	async fileReview(): Promise<string | undefined> {
 		const fileName = this.folder.getFileInDirectories();
 		const combinedString = fileName.join(' ');
-		this.logger.warn(fileName);
 		const message = [
 			openai.getSystemMessage(
-				'Веди себя как профессиональный разработчик программного обеспечения. Правильность названий файлов. Проверь опечатки',
+				'Веди себя как профессиональный разработчик программного обеспечения. Проверь толка правильность названий файлов. Проверь опечатки',
 			),
 		];
 		message.push(openai.getUserMessage(combinedString));
@@ -28,7 +27,7 @@ export class CodeReviewService {
 		const combinedString = pathArray.join(' ');
 		const message = [
 			openai.getSystemMessage(
-				'Веди себя как профессиональный разработчик программного обеспечения. Правильность структуры проекта. Проверь опечатки',
+				'Веди себя как профессиональный разработчик программного обеспечения. Проверь толка правильность названий папок. Проверь опечатки',
 			),
 		];
 		message.push(openai.getUserMessage(combinedString));

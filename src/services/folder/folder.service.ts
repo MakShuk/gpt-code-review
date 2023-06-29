@@ -1,5 +1,5 @@
 import { LoggerService } from '../logger/logger.service';
-import path, { basename, resolve } from 'path';
+import path, { resolve } from 'path';
 import fs, { promises as fsPromises } from 'fs';
 
 export class FolderService {
