@@ -22,6 +22,7 @@ yarn.lock
 .idea/
 *.drawio
 *.dtmp
+*.bkp
 .project
 .classpath
 *.launch
@@ -35,4 +36,3 @@ Thumbs.db
 #media 
 .ogg
 .mp3
-
