@@ -32,6 +32,8 @@ export class FolderService {
 		const fileNames = files.filter((file) => {
 			return fs.statSync(path.join(dirPath, file)).isFile();
 		});
+
+		const fullPathFiles = fileNames.map((file) => path.join(dirPath, file));
 		const subFiles = files.map((file) => {
 			const filePath = path.join(dirPath, file);
 			if (fs.statSync(filePath).isDirectory()) {
@@ -41,6 +43,8 @@ export class FolderService {
 			}
 		});
 
-		return [...fileNames, ...subFiles.flat()];
+		return [...fullPathFiles, ...subFiles.flat()].filter(
+			(value, index) => [...fullPathFiles, ...subFiles.flat()].indexOf(value) === index,
+		);
 	}
 }

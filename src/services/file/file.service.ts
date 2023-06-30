@@ -25,9 +25,9 @@ export class FileService {
 			.catch((e) => this.logger.error(e));
 	}
 
-	async readJsonFile(): Promise<any> {
+	async readJsonFile(path: string = this.path): Promise<any> {
 		try {
-			const data = await fs.readFile(this.path, { encoding: 'utf-8' });
+			const data = await fs.readFile(path, { encoding: 'utf-8' });
 			const jsonData = JSON.parse(data);
 			return jsonData;
 		} catch (e) {
@@ -36,9 +36,9 @@ export class FileService {
 		}
 	}
 
-	async readFile(): Promise<any> {
+	async readFile(path: string = this.path): Promise<any> {
 		try {
-			const data = await fs.readFile(this.path, { encoding: 'utf-8' });
+			const data = await fs.readFile(path, { encoding: 'utf-8' });
 			return data;
 		} catch (e) {
 			this.logger.error(e);
