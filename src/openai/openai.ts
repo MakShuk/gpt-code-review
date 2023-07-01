@@ -13,7 +13,7 @@ import 'dotenv/config';
 class OpenAi {
 	private configuration: Configuration;
 	private openai: OpenAIApi;
-	private token = process.env.GPT_KEY;
+	private token = process.env.GPT_NEW_KEY;
 	private logger = new LoggerService('OpenAi');
 
 	constructor() {
@@ -28,7 +28,6 @@ class OpenAi {
 			const responce = await this.openai.createChatCompletion({
 				model: 'gpt-3.5-turbo-16k',
 				messages,
-				temperature: 0.8,
 				/* max_tokens: 150,
 				temperature: 0.5, */
 			});

@@ -5,15 +5,19 @@
 	"main": "index.js",
 	"type": "commonjs",
 	"scripts": {
-		"dev": "ts-node src/index.ts"
+		"dev": "cross-env NODE_ENV=default ts-node src/index.ts",
+		"ref": "cross-env NODE_ENV=refactor ts-node src/index.ts"
 	},
 	"keywords": [],
 	"author": "Maksim Shuklin",
 	"license": "ISC",
 	"devDependencies": {
+		"@types/config": "^3.3.0",
+		"@types/marked": "^5.0.0",
 		"@types/node": "^20.3.1",
 		"@typescript-eslint/eslint-plugin": "^5.59.2",
 		"@typescript-eslint/parser": "^5.59.2",
+		"cross-env": "^7.0.3",
 		"eslint": "^8.40.0",
 		"eslint-config-prettier": "^8.8.0",
 		"eslint-plugin-prettier": "^4.2.1",
@@ -21,8 +25,6 @@
 		"typescript": "^5.0.4"
 	},
 	"dependencies": {
-		"@types/config": "^3.3.0",
-		"@types/marked": "^5.0.0",
 		"config": "^3.3.9",
 		"dotenv": "^16.3.1",
 		"marked": "^5.1.0",

@@ -2,53 +2,75 @@ import { openai } from '../../openai/openai';
 import { FileService } from '../file/file.service';
 import { FolderService } from '../folder/folder.service';
 import { LoggerService } from '../logger/logger.service';
+import { ChatCompletionRequestMessage as Request } from 'openai';
 
 export class CodeReviewService {
-	private logger = new LoggerService();
+	private logger = new LoggerService('CodeReviewService');
 	private folder: FolderService;
 	private file = new FileService(__dirname);
-	constructor(fullPathProject: string) {
+	private delayMs = 7000;
+	private systemMessage: Request;
+
+	constructor(fullPathProject: string, systemMessage: string) {
 		this.folder = new FolderService(fullPathProject);
+		this.systemMessage = openai.getSystemMessage(systemMessage);
 	}
 
-	async fileNameReview(): Promise<string | undefined> {
+	async fileNameReview(question?: string): Promise<string | undefined> {
 		const fileName = this.folder.getFileInDirectories();
 		const combinedString = fileName.join(' ');
-		const message = [
-			openai.getSystemMessage(
-				'Веди себя как профессиональный разработчик программного обеспечения. Проверь толка правильность названий файлов. Проверь опечатки',
-			),
-		];
-		message.push(openai.getUserMessage(combinedString));
+		const defaultQuestion =
+			question || `Проверь толька правильность названий файлов. Проверь опечатки`;
+		const message = [this.systemMessage];
+		message.push(openai.getUserMessage(`${defaultQuestion}: ${combinedString}`));
 		const openaiAnswer = await openai.chat(message);
+		this.logger.info('Запрос отправлен', 'fileNameReview');
+		await this.delay(this.delayMs);
 		return openaiAnswer?.content;
 	}
 
-	async folderNameReview(): Promise<string | undefined> {
+	async folderNameReview(question?: string): Promise<string | undefined> {
 		const pathArray = await this.folder.getDirectories();
 		const combinedString = pathArray.join(' ');
-		const message = [
-			openai.getSystemMessage(
-				'Веди себя как профессиональный разработчик программного обеспечения. Проверь толка правильность названий папок. Проверь опечатки',
-			),
-		];
-		message.push(openai.getUserMessage(combinedString));
+		const defaultQuestion =
+			question || `Проверь только правильность названий папок. Проверь опечатки`;
+		const message = [this.systemMessage];
+		message.push(openai.getUserMessage(`${defaultQuestion}: ${combinedString}`));
 		const openaiAnswer = await openai.chat(message);
+		this.logger.info('Запрос отправлен', 'folderNameReview');
+		await this.delay(this.delayMs);
 		return openaiAnswer?.content;
 	}
 
-	async fileReview(): Promise<any> {
-		const fileName = this.folder.getFileInDirectories();
-		const fileContents = await this.file.readFile(fileName[1]);
-		const message = [
-			openai.getSystemMessage(`Проверь код на опечатки. Проверь правильность названия переменных`),
-		];
-		message.push(openai.getUserMessage(`${fileContents}`));
-		const openaiAnswer = await openai.chat(message);
-		return openaiAnswer?.content;
+	async fileReview(question?: string): Promise<{ path: string; answer: string }[]> {
+		const answerArray: { path: string; answer: string }[] = [];
+		const fileNames = this.folder.getFileInDirectories();
+
+		let counter = 1;
+
+		for (const fileName of fileNames) {
+			const fileContents = await this.file.readFile(fileName);
+			const message = [this.systemMessage];
+			const defaultQuestion =
+				question || `Проверить правильность названия функции в коде. Предложи правильные варианты`;
+			message.push(openai.getUserMessage(`${defaultQuestion}: "${fileContents} `));
+
+			const startTime = new Date().getTime();
+			this.logger.info('Запрос отправлен', 'fileReview');
+			const openaiAnswer = await openai.chat(message);
+
+			const endTime = new Date().getTime();
+
+			counter++;
+
+			if (fileNames.length >= counter) {
+				this.logger.info('Задержка', 'fileReview');
+				await this.delay(this.delayMs + (endTime - startTime));
+			}
+
+			answerArray.push({ path: fileName, answer: openaiAnswer?.content || 'Error Ai answer' });
+		}
+		return answerArray;
 	}
-
-	/* 	private async readFile(path: string) {
-
-	} */
+	delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 }

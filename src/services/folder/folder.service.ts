@@ -3,11 +3,13 @@ import path, { resolve } from 'path';
 import fs, { promises as fsPromises } from 'fs';
 
 export class FolderService {
-	logger = new LoggerService('FolderService');
-	dirPath: string;
+	private logger = new LoggerService('FolderService');
+	private dirPath: string;
+	private excludedArray: string[];
 
-	constructor(private fileName: string) {
+	constructor(private fileName: string, excludedArray?: string[]) {
 		this.dirPath = resolve(fileName);
+		this.excludedArray = excludedArray || [];
 	}
 
 	async getDirectories(dirPath: string = this.dirPath): Promise<string[]> {
@@ -24,7 +26,7 @@ export class FolderService {
 		);
 
 		const subDirectories = directories.flat();
-		return [dirPath.replace(/\//g, '\\'), ...subDirectories];
+		return this.filtrateArray([dirPath.replace(/\//g, '\\'), ...subDirectories]);
 	}
 
 	getFileInDirectories(dirPath: string = this.dirPath): string[] {
@@ -43,8 +45,20 @@ export class FolderService {
 			}
 		});
 
-		return [...fullPathFiles, ...subFiles.flat()].filter(
-			(value, index) => [...fullPathFiles, ...subFiles.flat()].indexOf(value) === index,
+		return this.filtrateArray(
+			[...fullPathFiles, ...subFiles.flat()].filter(
+				(value, index) => [...fullPathFiles, ...subFiles.flat()].indexOf(value) === index,
+			),
 		);
+	}
+
+	private filtrateArray(array: string[]): string[] {
+		//	const excludedArray = ['node_modules', 'json', '.env'];
+
+		const filteredArray = array.filter(
+			(item) => !this.excludedArray.some((value) => item.includes(value)),
+		);
+
+		return filteredArray;
 	}
 }
