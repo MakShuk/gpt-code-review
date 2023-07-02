@@ -53,8 +53,6 @@ export class FolderService {
 	}
 
 	private filtrateArray(array: string[]): string[] {
-		//	const excludedArray = ['node_modules', 'json', '.env'];
-
 		const filteredArray = array.filter(
 			(item) => !this.excludedArray.some((value) => item.includes(value)),
 		);

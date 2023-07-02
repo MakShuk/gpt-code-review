@@ -38,8 +38,7 @@ export class FileService {
 
 	async readFile(path: string = this.path): Promise<any> {
 		try {
-			const buffer = await fs.readFile(path, { encoding: 'utf-8' });
-			const fileContent = buffer.replace(/(\r\n|\n|\r|\t)/gm, '');
+			const fileContent = await fs.readFile(path, { encoding: 'utf-8' });
 			return fileContent;
 		} catch (e) {
 			this.logger.error(e);

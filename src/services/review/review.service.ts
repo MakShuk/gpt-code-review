@@ -1,20 +1,21 @@
+import { basename } from 'path';
 import { openai } from '../../openai/openai';
 import { FileService } from '../file/file.service';
 import { FolderService } from '../folder/folder.service';
 import { LoggerService } from '../logger/logger.service';
 import { ChatCompletionRequestMessage as Request } from 'openai';
-import config from 'config';
 
 export class CodeReviewService {
 	private logger = new LoggerService('CodeReviewService');
 	private folder: FolderService;
-	private file = new FileService(__dirname);
+	private file: FileService;
 	private delayMs = 7000;
 	private systemMessage: Request;
 
-	constructor(fullPathProject: string, systemMessage: string) {
-		this.folder = new FolderService(fullPathProject, config.get('EXCLUDE'));
+	constructor(fullPathProject: string, systemMessage: string, excLudeFile?: string[]) {
+		this.folder = new FolderService(fullPathProject, excLudeFile);
 		this.systemMessage = openai.getSystemMessage(systemMessage);
+		this.file = new FileService(__dirname);
 	}
 
 	async fileNameReview(question?: string): Promise<string | undefined> {
@@ -58,7 +59,8 @@ export class CodeReviewService {
 			message.push(openai.getUserMessage(`${defaultQuestion}: "${fileContents} `));
 
 			const startTime = new Date().getTime();
-			this.logger.info('Запрос отправлен', 'fileReview');
+			this.logger.info('Запрос отправлен', basename(fileName));
+
 			const openaiAnswer = await openai.chat(message);
 
 			const endTime = new Date().getTime();
@@ -74,5 +76,5 @@ export class CodeReviewService {
 		}
 		return answerArray;
 	}
-	delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+	private delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 }

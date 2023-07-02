@@ -4,11 +4,8 @@ import {
 	Configuration,
 	OpenAIApi,
 } from 'openai';
-//import config from 'config';
 import { LoggerService } from '../services/logger/logger.service';
 import 'dotenv/config';
-
-//config.get('CHATGPT_TOKEN')
 
 class OpenAi {
 	private configuration: Configuration;
@@ -25,13 +22,13 @@ class OpenAi {
 
 	async chat(messages: Request[]): Promise<Response | undefined> {
 		try {
-			const responce = await this.openai.createChatCompletion({
+			const response = await this.openai.createChatCompletion({
 				model: 'gpt-3.5-turbo-16k',
 				messages,
 				/* max_tokens: 150,
 				temperature: 0.5, */
 			});
-			return responce.data.choices[0].message;
+			return response.data.choices[0].message;
 		} catch (e) {
 			if (e instanceof Error) {
 				this.logger.error(e.message);
@@ -43,10 +40,10 @@ class OpenAi {
 
 	async transcription(readStream: any): Promise<string> {
 		try {
-			const responce = await this.openai.createTranscription(readStream, 'whisper-1');
-			return responce.data.text;
+			const response = await this.openai.createTranscription(readStream, 'whisper-1');
+			return response.data.text;
 		} catch (error) {
-			console.log(`Error while transcription: ${error}`);
+			this.logger.error(`Error while transcription: ${error}`);
 			return `Error while transcription: ${error}`;
 		}
 	}

@@ -30,101 +30,68 @@
                 <div class="root">
                        <div class="card mb-2">
                                 <div class="card-header">
-                                    <p>D:\Development\TypeScript\TypeScriptGuru\index.ts</p>
+                                    <p>D:\Development\NodeJS\gpt-code-review\src\services\review\review.service.ts</p>
 
                                 </div>
                                 <div class="card-body">
                                     <blockquote class="blockquote mb-0">
-                                    <p><p>Код, который вы предоставили, нуждается в рефакторинге, чтобы его можно было лучше понять и поддерживать. Вот обновленный код после рефакторинга:</p>
-<p>type GameTime = {
-    total: number;
-    inMenu: number;
-};</p>
-<p>interface PlayerData&lt;Game, Hours extends string | number | GameTime&gt; {
-    game: Game;
-    hours: Hours;
-    server: string;
-}</p>
-<p>const player1: PlayerData&lt;string, number&gt; = {
-    game: &#39;CS:GO&#39;,
-    hours: 300,
-    server: &#39;basic&#39;,
-};</p>
-<p>const player2: PlayerData&lt;number, string&gt; = {
-    game: 2048,
-    hours: &#39;300 h.&#39;,
-    server: &#39;arcade&#39;,
-};</p>
-<p>const player3: PlayerData&lt;string, GameTime&gt; = {
-    game: &#39;Chess&#39;,
-    hours: { total: 500, inMenu: 50 },
-    server: &#39;chess&#39;,
-};</p>
-<p>enum FigureNames {
-    &#39;Square&#39;,
-    &#39;Circle&#39;,
-    &#39;Triangle&#39;,
-    &#39;Other&#39;
-}</p>
-<p>interface ShapeData {
-    name: FigureNames;
-    data?: {
-        a?: number;
-        b?: number;
-        c?: number;
-        l?: number;
-        r?: number;
-    };
-}</p>
-<p>interface AmountOfFigures {
-    squares: number;
-    circles: number;
-    triangles: number;
-    others: number;
-}</p>
-<p>function calculateAmountOfFigures(figures: ShapeData[]): AmountOfFigures {
-    const result: AmountOfFigures = {
-        squares: 0,
-        circles: 0,
-        triangles: 0,
-        others: 0,
-    };</p>
-<pre><code>figures.forEach((figure) =&gt; {
-    switch (figure.name) {
-        case FigureNames.Square:
-            result.squares++;
-            break;
-        case FigureNames.Circle:
-            result.circles++;
-            break;
-        case FigureNames.Triangle:
-            result.triangles++;
-            break;
-        default:
-            result.others++;
-            break;
-    }
-});
-
-return result;
+                                    <p><p>При проверке правильности названий переменных в коде, я могу заметить несколько проблем.</p>
+<ol>
+<li>В начале кода импортируются следующие модули:</li>
+</ol>
+<pre><code class="language-javascript">import { basename } from &#39;path&#39;;
+import { openai } from &#39;../../openai/openai&#39;;
+import { FileService } from &#39;../file/file.service&#39;;
+import { FolderService } from &#39;../folder/folder.service&#39;;
+import { LoggerService } from &#39;../logger/logger.service&#39;;
+import { ChatCompletionRequestMessage as Request } from &#39;openai&#39;;
 </code></pre>
-<p>}</p>
-<p>const data: ShapeData[] = [
-    {name: FigureNames.Square, data: { a: 5, b: 10 }},
-    {name: FigureNames.Square, data: { a: 6, b: 11 }},
-    {name: FigureNames.Triangle, data: { a: 5, b: 10, c: 14 }},
-    {name: FigureNames.Other, data: { l: 15 }},
-    {name: FigureNames.Circle, data: { r: 10 }},
-    {name: FigureNames.Circle, data: { r: 5 }},
-    {name: FigureNames.Square, data: { a: 15, b: 7 }},
-    {name: FigureNames.Triangle},
-];</p>
-<p>console.log(calculateAmountOfFigures(data));</p>
-<p>Прежде всего, я переименовал некоторые значения и идентификаторы, чтобы сделать код более понятным и последовательным. Также я добавил комментарии для объяснения некоторых частей кода.</p>
-<p>Теперь код более читаемый и поддерживаемый. В функции calculateAmountOfFigures я использовал переключение case для определения типа фигуры и увеличения соответствующего счетчика.</p>
-<p>Я также обратил внимание на область действия и использование типов в интерфейсах для обеспечения безопасности типов и удобочитаемости кода.</p>
-<p>Наконец, я создал пример данных для тестирования функции calculateAmountOfFigures и вывел результат на консоль. После запуска кода на консоль будет выводиться объект с количеством каждого типа фигуры в массиве данных.</p>
-<p>Надеюсь, это помогло вам понять рефакторинг вашего кода и получить более читаемый и понятный результат.</p>
+<p>Ошибок в названии переменных я не обнаружил.</p>
+<ol start="2">
+<li>Далее определен класс <code>CodeReviewService</code>, в котором есть несколько переменных и методов:</li>
+</ol>
+<pre><code class="language-javascript">export class CodeReviewService {
+    private logger = new LoggerService(&#39;CodeReviewService&#39;);
+    private folder: FolderService;
+    private file: FileService;
+    private delayMs = 7000;
+    private systemMessage: Request;
+
+    // Конструктор класса
+    constructor(fullPathProject: string, systemMessage: string, excludeFile?: string[]) {
+        this.folder = new FolderService(fullPathProject, excludeFile);
+        this.systemMessage = openai.getSystemMessage(systemMessage);
+        this.file = new FileService(__dirname);
+    }
+
+    // Метод для проверки правильности названий файлов
+    async fileNameReview(question?: string): Promise&lt;string | undefined&gt; {
+        ...
+    }
+
+    // Метод для проверки правильности названий папок
+    async folderNameReview(question?: string): Promise&lt;string | undefined&gt; {
+        ...
+    }
+
+    // Метод для проверки названия функций в коде
+    async fileReview(question?: string): Promise&lt;{ path: string; answer: string }[]&gt; {
+        ...
+    }
+
+    // Вспомогательный метод для задержки выполнения
+    private delay = (ms: number): Promise&lt;void&gt; =&gt; new Promise((resolve) =&gt; setTimeout(resolve, ms));
+}
+</code></pre>
+<ol start="3">
+<li><p>При вызове метода <code>fileNameReview</code> передается вопрос (если он есть) и строка, состоящая из названий файлов, полученных из объекта <code>FolderService</code>. Затем создается сообщение для отправки в OpenAI API, включающее сообщение системы и сообщение пользователя. После отправки запроса выполняется задержка в 7 секунд, чтобы дать время для обработки запроса и получения ответа. Возвращается ответ OpenAI API.</p>
+</li>
+<li><p>Метод <code>folderNameReview</code> работает аналогично методу <code>fileNameReview</code>, но проверяет названия папок вместо файлов.</p>
+</li>
+<li><p>Метод <code>fileReview</code> использует метод <code>getFileInDirectories</code> для получения названий файлов из объекта <code>FolderService</code>. Затем для каждого файла выполняется чтение его содержимого и формирование сообщения для отправки в OpenAI API. Здесь также есть задержка между запросами для предотвращения проблем с частыми запросами. Возвращается массив с объектами, содержащими путь к файлу и ответ OpenAI API.</p>
+</li>
+</ol>
+<p>Общая структура кода выглядит правильной, однако чтобы определить, найдены ли ошибки в используемых импортах и использованы ли переменные корректно в коде, мне требуется больше информации, такая как содержимое файлов <code>FolderService</code>, <code>FileService</code>, <code>LoggerService</code> и <code>openai</code>. Также было бы полезно знать, какую конкретную проблему вы пытаетесь решить, чтобы я мог точнее определить, какие изменения могут потребоваться в коде.</p>
 </p>
                                     </blockquote>
                                 </div>
