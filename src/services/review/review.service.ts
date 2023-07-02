@@ -3,6 +3,7 @@ import { FileService } from '../file/file.service';
 import { FolderService } from '../folder/folder.service';
 import { LoggerService } from '../logger/logger.service';
 import { ChatCompletionRequestMessage as Request } from 'openai';
+import config from 'config';
 
 export class CodeReviewService {
 	private logger = new LoggerService('CodeReviewService');
@@ -12,7 +13,7 @@ export class CodeReviewService {
 	private systemMessage: Request;
 
 	constructor(fullPathProject: string, systemMessage: string) {
-		this.folder = new FolderService(fullPathProject);
+		this.folder = new FolderService(fullPathProject, config.get('EXCLUDE'));
 		this.systemMessage = openai.getSystemMessage(systemMessage);
 	}
 
@@ -45,6 +46,7 @@ export class CodeReviewService {
 	async fileReview(question?: string): Promise<{ path: string; answer: string }[]> {
 		const answerArray: { path: string; answer: string }[] = [];
 		const fileNames = this.folder.getFileInDirectories();
+		this.logger.warn(`AI requests expected : ${fileNames.length}`);
 
 		let counter = 1;
 
