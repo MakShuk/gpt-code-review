@@ -38,81 +38,12 @@
                                 </div>
                                 <div class="card-body">
                                     <blockquote class="blockquote mb-0">
-                                    <p><p>В представленном коде я замечаю несколько проблем с названиями переменных.</p>
-<ol>
-<li><p>В интерфейсе &quot;IPhone&quot; присутствует ошибка в названии переменной. Вместо &quot;number&quot; следует использовать &quot;phoneNumber&quot; или другое подходящее название, чтобы избежать конфликта с встроенным типом данных &quot;number&quot;.</p>
-</li>
-<li><p>В объявлении типа &quot;PhoneCompanyType&quot; у нас используется неправильное использование индексатора. Вместо &quot;IPhone[&#39;company&#39;]&quot; следует использовать &quot;IMobilePhone[&#39;company&#39;]&quot; для доступа к типу компании телефона.</p>
-</li>
-<li><p>Имя интерфейса &quot;IMobilePhone&quot; не соответствует названию, так как этот интерфейс описывает расширение &quot;IPhone&quot;. Предлагаю изменить название интерфейса на &quot;IMobilePhone&quot; или &quot;IExtendedPhone&quot; для лучшей ясности.</p>
-</li>
-<li><p>В свойстве &quot;manufactured&quot; интерфейса &quot;IMobilePhone&quot; описывается тип данных &quot;Date&quot;, но в объектах массива phones это свойство передается как строка. Предлагаю изменить тип данных на &quot;string&quot;, чтобы сделать их совместимыми.</p>
-</li>
-</ol>
-<p>Правильное исправление:</p>
-<pre><code class="language-typescript">interface IPhone {
-    company: string;
-    phoneNumber: number;
-}
-
-type PhoneCompanyType = IMobilePhone[&#39;company&#39;];
-
-interface IMobilePhone extends IPhone {
-    size: string;
-    companyPartner: PhoneCompanyType;
-    manufactured: string; // Тип данных изменен на строку
-}
-
-const phones: IMobilePhone[] = [
-    {
-        company: &#39;Nokia&#39;,
-        phoneNumber: 1285637,
-        size: &#39;5.5&#39;,
-        companyPartner: &#39;MobileNokia&#39;,
-        manufactured: &#39;2022-09-01&#39;, // Значение изменено на строку
-    },
-    {
-        company: &#39;Samsung&#39;,
-        phoneNumber: 4356637,
-        size: &#39;5.0&#39;,
-        companyPartner: &#39;SamMobile&#39;,
-        manufactured: &#39;2021-11-05&#39;, // Значение изменено на строку
-    },
-    {
-        company: &#39;Apple&#39;,
-        phoneNumber: 4552833,
-        size: &#39;5.7&#39;,
-        companyPartner: &#39;no data&#39;,
-        manufactured: &#39;2022-05-24T12:00:00&#39;, // Значение изменено на строку
-    },
-];
-
-interface IPhonesManufacturedAfterDate extends IMobilePhone {
-    manufacturedAfterDate: string;
-}
-
-function filterPhonesByDate&lt;T extends IMobilePhone&gt;(
-    phones: T[],
-    key: keyof T,
-    initial: string,
-): IPhonesManufacturedAfterDate[] {
-    return phones
-        .filter((phone) =&gt; {
-            const manufactured = phone[key];
-
-            if (typeof manufactured === &#39;string&#39; &amp;&amp; new Date(manufactured).getTime() &gt; new Date(initial).getTime()) {
-                return phone;
-            }
-        })
-        .map((phone) =&gt; {
-            const newObj = { ...phone, manufacturedAfterDate: initial };
-            return newObj;
-        });
-}
-
-console.log(filterPhonesByDate(phones, &#39;manufactured&#39;, &#39;2022-01-01&#39;));
-</code></pre>
-<p>После введения этих исправлений, код будет компилироваться и выполняться без ошибок. Кроме того, функция <code>filterPhonesByDate</code> будет фильтровать телефоны по дате производства и добавлять новое свойство <code>manufacturedAfterDate</code> к результатам фильтрации. В консоли будет выведен финальный результат фильтрации для всех телефонов, произведенных после определенной даты (&#39;2022-01-01&#39; в данном случае).</p>
+                                    <p><p>Все названия переменных в коде выглядят правильными. Все типы и интерфейсы также описывают свойства объектов в коде достаточно точно.</p>
+<p>Код определяет интерфейсы <code>IPhone</code> и <code>IMobilePhone</code>. <code>IMobilePhone</code> наследует <code>IPhone</code> и добавляет свои собственные свойства, такие как <code>size</code>, <code>companyPartner</code> и <code>manufactured</code>.</p>
+<p>Константа <code>phones</code> - это массив объектов типа <code>IMobilePhone</code>, который представляет собой список различных телефонов с их характеристиками.</p>
+<p>Интерфейс <code>IPhonesManufacturedAfterDate</code> расширяет <code>IMobilePhone</code> и добавляет свойство <code>manufacturedAfterDate</code>.</p>
+<p>Функция <code>filterPhonesByDate</code> принимает массив и дату в качестве параметров и фильтрует массив телефонов, чтобы оставить только те, которые были произведены после указанной даты. Затем функция добавляет новое свойство <code>manufacturedAfterDate</code> к каждому отфильтрованному телефону и возвращает новый массив с отфильтрованными и измененными телефонами. Этот массив выводится в консоль при вызове функции <code>filterPhonesByDate</code> с указанной датой.</p>
+<p>В результате, код должен вывести в консоль массив телефонов, которые были произведены после указанной даты &#39;2022-01-01&#39;, вместе с добавленным свойством &#39;manufacturedAfterDate&#39;.</p>
 </p>
                                     </blockquote>
                                 </div>
