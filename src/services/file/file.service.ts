@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import { WriteStream, createWriteStream, createReadStream, ReadStream } from 'fs';
 import { resolve } from 'path';
 import { LoggerService } from '../logger/logger.service';
+import { dataWriteFile } from './file.type';
 
 export class FileService {
 	private logger = new LoggerService('FileService');
@@ -10,7 +11,7 @@ export class FileService {
 		this.path = resolve(fileName);
 	}
 
-	async writeJsonFile(data: any): Promise<void> {
+	async writeJsonFile<T>(data: T): Promise<void> {
 		try {
 			const dataJson = JSON.stringify(data);
 			await fs.writeFile(this.fileName, dataJson);
@@ -19,24 +20,26 @@ export class FileService {
 			this.logger.error(error);
 		}
 	}
-	writeFile(data: any): void {
+	writeFile<T extends dataWriteFile>(data: T): void {
 		fs.writeFile(this.fileName, data)
 			.then(() => this.logger.info(`Data written to ${this.fileName}`))
 			.catch((e) => this.logger.error(e));
 	}
 
-	async readJsonFile(path: string = this.path): Promise<any> {
+	async readJsonFile<T>(path: string = this.path): Promise<T> {
 		try {
 			const data = await fs.readFile(path, { encoding: 'utf-8' });
 			const jsonData = JSON.parse(data);
 			return jsonData;
 		} catch (e) {
-			this.logger.error(e);
-			return null;
+			if (e instanceof Error) {
+				this.logger.error(e.message);
+			}
+			throw Error('FileService Erorr');
 		}
 	}
 
-	async readFile(path: string = this.path): Promise<any> {
+	async readFile(path: string = this.path): Promise<string | null> {
 		try {
 			const fileContent = await fs.readFile(path, { encoding: 'utf-8' });
 			return fileContent;

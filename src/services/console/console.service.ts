@@ -67,8 +67,8 @@ export class ConsoleService {
 		console.log('setProjectFolder');
 		const newPath = await this.readConsole('NEW PATH: ', true);
 		const settingsFile = new FileService('config/settings.json');
-		const settings: ISettings = await settingsFile.readJsonFile();
-		settings.REVIEW_DIRECTOR = newPath;
+		const settings = (await settingsFile.readJsonFile<ISettings>()) || null;
+		settings ? (settings.REVIEW_DIRECTOR = newPath) : null;
 		await settingsFile.writeJsonFile(settings);
 	}
 

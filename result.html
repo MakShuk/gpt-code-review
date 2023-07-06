@@ -20,6 +20,9 @@
                     .blockquote {
                         font-size: 1rem;
                     }
+                    .highlight {
+                        background-color: yellow;
+                      }
                     p {
                         margin: 0
                     }
@@ -30,72 +33,118 @@
                 <div class="root">
                        <div class="card mb-2">
                                 <div class="card-header">
-                                    <p>D:\Development\NodeJS\gpt-code-review\src\services\review\review.service.ts</p>
+                                    <p>D:\Development\TypeScript\TypeScriptGuru\src\index.ts</p>
 
                                 </div>
                                 <div class="card-body">
                                     <blockquote class="blockquote mb-0">
-                                    <p><p>При проверке правильности названий переменных в коде, я могу заметить несколько проблем.</p>
+                                    <p><p>В представленном коде я замечаю несколько проблем с названиями переменных.</p>
 <ol>
-<li>В начале кода импортируются следующие модули:</li>
+<li><p>В интерфейсе &quot;IPhone&quot; присутствует ошибка в названии переменной. Вместо &quot;number&quot; следует использовать &quot;phoneNumber&quot; или другое подходящее название, чтобы избежать конфликта с встроенным типом данных &quot;number&quot;.</p>
+</li>
+<li><p>В объявлении типа &quot;PhoneCompanyType&quot; у нас используется неправильное использование индексатора. Вместо &quot;IPhone[&#39;company&#39;]&quot; следует использовать &quot;IMobilePhone[&#39;company&#39;]&quot; для доступа к типу компании телефона.</p>
+</li>
+<li><p>Имя интерфейса &quot;IMobilePhone&quot; не соответствует названию, так как этот интерфейс описывает расширение &quot;IPhone&quot;. Предлагаю изменить название интерфейса на &quot;IMobilePhone&quot; или &quot;IExtendedPhone&quot; для лучшей ясности.</p>
+</li>
+<li><p>В свойстве &quot;manufactured&quot; интерфейса &quot;IMobilePhone&quot; описывается тип данных &quot;Date&quot;, но в объектах массива phones это свойство передается как строка. Предлагаю изменить тип данных на &quot;string&quot;, чтобы сделать их совместимыми.</p>
+</li>
 </ol>
-<pre><code class="language-javascript">import { basename } from &#39;path&#39;;
-import { openai } from &#39;../../openai/openai&#39;;
-import { FileService } from &#39;../file/file.service&#39;;
-import { FolderService } from &#39;../folder/folder.service&#39;;
-import { LoggerService } from &#39;../logger/logger.service&#39;;
-import { ChatCompletionRequestMessage as Request } from &#39;openai&#39;;
-</code></pre>
-<p>Ошибок в названии переменных я не обнаружил.</p>
-<ol start="2">
-<li>Далее определен класс <code>CodeReviewService</code>, в котором есть несколько переменных и методов:</li>
-</ol>
-<pre><code class="language-javascript">export class CodeReviewService {
-    private logger = new LoggerService(&#39;CodeReviewService&#39;);
-    private folder: FolderService;
-    private file: FileService;
-    private delayMs = 7000;
-    private systemMessage: Request;
-
-    // Конструктор класса
-    constructor(fullPathProject: string, systemMessage: string, excludeFile?: string[]) {
-        this.folder = new FolderService(fullPathProject, excludeFile);
-        this.systemMessage = openai.getSystemMessage(systemMessage);
-        this.file = new FileService(__dirname);
-    }
-
-    // Метод для проверки правильности названий файлов
-    async fileNameReview(question?: string): Promise&lt;string | undefined&gt; {
-        ...
-    }
-
-    // Метод для проверки правильности названий папок
-    async folderNameReview(question?: string): Promise&lt;string | undefined&gt; {
-        ...
-    }
-
-    // Метод для проверки названия функций в коде
-    async fileReview(question?: string): Promise&lt;{ path: string; answer: string }[]&gt; {
-        ...
-    }
-
-    // Вспомогательный метод для задержки выполнения
-    private delay = (ms: number): Promise&lt;void&gt; =&gt; new Promise((resolve) =&gt; setTimeout(resolve, ms));
+<p>Правильное исправление:</p>
+<pre><code class="language-typescript">interface IPhone {
+    company: string;
+    phoneNumber: number;
 }
+
+type PhoneCompanyType = IMobilePhone[&#39;company&#39;];
+
+interface IMobilePhone extends IPhone {
+    size: string;
+    companyPartner: PhoneCompanyType;
+    manufactured: string; // Тип данных изменен на строку
+}
+
+const phones: IMobilePhone[] = [
+    {
+        company: &#39;Nokia&#39;,
+        phoneNumber: 1285637,
+        size: &#39;5.5&#39;,
+        companyPartner: &#39;MobileNokia&#39;,
+        manufactured: &#39;2022-09-01&#39;, // Значение изменено на строку
+    },
+    {
+        company: &#39;Samsung&#39;,
+        phoneNumber: 4356637,
+        size: &#39;5.0&#39;,
+        companyPartner: &#39;SamMobile&#39;,
+        manufactured: &#39;2021-11-05&#39;, // Значение изменено на строку
+    },
+    {
+        company: &#39;Apple&#39;,
+        phoneNumber: 4552833,
+        size: &#39;5.7&#39;,
+        companyPartner: &#39;no data&#39;,
+        manufactured: &#39;2022-05-24T12:00:00&#39;, // Значение изменено на строку
+    },
+];
+
+interface IPhonesManufacturedAfterDate extends IMobilePhone {
+    manufacturedAfterDate: string;
+}
+
+function filterPhonesByDate&lt;T extends IMobilePhone&gt;(
+    phones: T[],
+    key: keyof T,
+    initial: string,
+): IPhonesManufacturedAfterDate[] {
+    return phones
+        .filter((phone) =&gt; {
+            const manufactured = phone[key];
+
+            if (typeof manufactured === &#39;string&#39; &amp;&amp; new Date(manufactured).getTime() &gt; new Date(initial).getTime()) {
+                return phone;
+            }
+        })
+        .map((phone) =&gt; {
+            const newObj = { ...phone, manufacturedAfterDate: initial };
+            return newObj;
+        });
+}
+
+console.log(filterPhonesByDate(phones, &#39;manufactured&#39;, &#39;2022-01-01&#39;));
 </code></pre>
-<ol start="3">
-<li><p>При вызове метода <code>fileNameReview</code> передается вопрос (если он есть) и строка, состоящая из названий файлов, полученных из объекта <code>FolderService</code>. Затем создается сообщение для отправки в OpenAI API, включающее сообщение системы и сообщение пользователя. После отправки запроса выполняется задержка в 7 секунд, чтобы дать время для обработки запроса и получения ответа. Возвращается ответ OpenAI API.</p>
-</li>
-<li><p>Метод <code>folderNameReview</code> работает аналогично методу <code>fileNameReview</code>, но проверяет названия папок вместо файлов.</p>
-</li>
-<li><p>Метод <code>fileReview</code> использует метод <code>getFileInDirectories</code> для получения названий файлов из объекта <code>FolderService</code>. Затем для каждого файла выполняется чтение его содержимого и формирование сообщения для отправки в OpenAI API. Здесь также есть задержка между запросами для предотвращения проблем с частыми запросами. Возвращается массив с объектами, содержащими путь к файлу и ответ OpenAI API.</p>
-</li>
-</ol>
-<p>Общая структура кода выглядит правильной, однако чтобы определить, найдены ли ошибки в используемых импортах и использованы ли переменные корректно в коде, мне требуется больше информации, такая как содержимое файлов <code>FolderService</code>, <code>FileService</code>, <code>LoggerService</code> и <code>openai</code>. Также было бы полезно знать, какую конкретную проблему вы пытаетесь решить, чтобы я мог точнее определить, какие изменения могут потребоваться в коде.</p>
+<p>После введения этих исправлений, код будет компилироваться и выполняться без ошибок. Кроме того, функция <code>filterPhonesByDate</code> будет фильтровать телефоны по дате производства и добавлять новое свойство <code>manufacturedAfterDate</code> к результатам фильтрации. В консоли будет выведен финальный результат фильтрации для всех телефонов, произведенных после определенной даты (&#39;2022-01-01&#39; в данном случае).</p>
 </p>
                                     </blockquote>
                                 </div>
                           </div>
                 </div>
+                <script>
+                    function search(messeage) {
+                        let text = document.body.innerText;
+                        let searchWord = messeage;
+                        let regex = new RegExp(searchWord, "gi");
+                        let body_re = document.body.innerHTML.replace(regex, '<span class="highlight">' + searchWord + '</span>');
+                        document.body.innerHTML = body_re;
+                        }
+                        
+                        
+                        document.addEventListener('click', function(event) {
+                        let range = document.caretRangeFromPoint(event.clientX, event.clientY);
+                        let word = getWordUnderCursor(range);
+                        });
+                        
+                        
+                        function getWordUnderCursor(range) {
+                        let text = range.startContainer.textContent;
+                        let cursorOffset = range.startOffset;
+                        let start = text.lastIndexOf(' ', cursorOffset) + 1;
+                        let end = text.indexOf(' ', cursorOffset);
+                        if (end === -1) {
+                            end = text.length;
+                        }
+                        let word = text.slice(start, end);
+                        search(word);
+                        }
+                </script>
             </body>
         </html>

@@ -71,6 +71,9 @@ export class CreateHtmlPage {
                     .blockquote {
                         font-size: 1rem;
                     }
+                    .highlight {
+                        background-color: yellow;
+                      }
                     p {
                         margin: 0
                     }
@@ -81,6 +84,34 @@ export class CreateHtmlPage {
                 <div class="root">
                     ${this.html}
                 </div>
+                <script>
+                    function search(messeage) {
+                        let text = document.body.innerText;
+                        let searchWord = messeage;
+                        let regex = new RegExp(searchWord, "gi");
+                        let body_re = document.body.innerHTML.replace(regex, '<span class="highlight">' + searchWord + '</span>');
+                        document.body.innerHTML = body_re;
+                        }
+                        
+                        
+                        document.addEventListener('click', function(event) {
+                        let range = document.caretRangeFromPoint(event.clientX, event.clientY);
+                        let word = getWordUnderCursor(range);
+                        });
+                        
+                        
+                        function getWordUnderCursor(range) {
+                        let text = range.startContainer.textContent;
+                        let cursorOffset = range.startOffset;
+                        let start = text.lastIndexOf(' ', cursorOffset) + 1;
+                        let end = text.indexOf(' ', cursorOffset);
+                        if (end === -1) {
+                            end = text.length;
+                        }
+                        let word = text.slice(start, end);
+                        search(word);
+                        }
+                </script>
             </body>
         </html>`;
 		await this.resultFile.writeFile(code);

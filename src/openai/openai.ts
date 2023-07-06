@@ -38,7 +38,7 @@ class OpenAi {
 		}
 	}
 
-	async transcription(readStream: any): Promise<string> {
+	async transcription(readStream: File): Promise<string> {
 		try {
 			const response = await this.openai.createTranscription(readStream, 'whisper-1');
 			return response.data.text;
