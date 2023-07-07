@@ -22,7 +22,7 @@ export class FileService {
 	}
 	writeFile<T extends dataWriteFile>(data: T): void {
 		fs.writeFile(this.fileName, data)
-			.then(() => this.logger.info(`Data written to ${this.fileName}`))
+			.then(() => null)
 			.catch((e) => this.logger.error(e));
 	}
 

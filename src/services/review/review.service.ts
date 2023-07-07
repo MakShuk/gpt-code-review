@@ -1,4 +1,4 @@
-import { basename } from 'path';
+import path, { basename } from 'path';
 import { openai } from '../../openai/openai';
 import { FileService } from '../file/file.service';
 import { FolderService } from '../folder/folder.service';
@@ -19,14 +19,14 @@ export class CodeReviewService {
 	}
 
 	async fileNameReview(question?: string): Promise<string | undefined> {
-		const fileName = this.folder.getFileInDirectories();
-		const combinedString = fileName.join(' ');
-		const defaultQuestion =
-			question || `Проверь толька правильность названий файлов. Проверь опечатки`;
-		const message = [this.systemMessage];
+		const pathArray = this.folder.getFileInDirectories();
+		const fileNames: string[] = pathArray.map((filePath) => path.basename(filePath));
+		const combinedString = fileNames.join(' ');
+		const defaultQuestion = question || `Проверь опечатки в названиях фалов`;
+		const message = [];
 		message.push(openai.getUserMessage(`${defaultQuestion}: ${combinedString}`));
-		const openaiAnswer = await openai.chat(message);
 		this.logger.info('Запрос отправлен', 'fileNameReview');
+		const openaiAnswer = await openai.chat(message);
 		await this.delay(this.delayMs);
 		return openaiAnswer?.content;
 	}
@@ -34,12 +34,11 @@ export class CodeReviewService {
 	async folderNameReview(question?: string): Promise<string | undefined> {
 		const pathArray = await this.folder.getDirectories();
 		const combinedString = pathArray.join(' ');
-		const defaultQuestion =
-			question || `Проверь только правильность названий папок. Проверь опечатки`;
-		const message = [this.systemMessage];
+		const defaultQuestion = question || `Проверь опечатки в названиях каталогов из этих путей`;
+		const message = [];
 		message.push(openai.getUserMessage(`${defaultQuestion}: ${combinedString}`));
-		const openaiAnswer = await openai.chat(message);
 		this.logger.info('Запрос отправлен', 'folderNameReview');
+		const openaiAnswer = await openai.chat(message);
 		await this.delay(this.delayMs);
 		return openaiAnswer?.content;
 	}

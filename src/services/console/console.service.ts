@@ -1,4 +1,4 @@
-import { ISettings } from '../../interfaces/index.interface';
+import { IPromts, ISettings } from '../../interfaces/index.interface';
 import chalk from 'chalk';
 import dedent from 'dedent-js';
 import readline from 'readline';
@@ -11,7 +11,7 @@ const weather = chalk.black.bgWhite;
 
 export class ConsoleService {
 	consoleInterface: readline.Interface;
-	constructor(private settings: ISettings) {
+	constructor(private settings: ISettings, private promts: IPromts[]) {
 		this.settings = settings;
 		this.consoleInterface = readline.createInterface({
 			input: process.stdin,
@@ -19,26 +19,19 @@ export class ConsoleService {
 		});
 	}
 	async start(): Promise<string> {
-		const fileReviewMasage = this.settings.FILE_NAME_REVIEW
-			? `${success(this.settings.FILE_NAME_REVIEW)}`
-			: `${error(this.settings.FILE_NAME_REVIEW)}`;
-		const folderReviewMasage = this.settings.FOLDER_NAME_REVIEW
-			? `${success(this.settings.FOLDER_NAME_REVIEW)}`
-			: `${error(this.settings.FOLDER_NAME_REVIEW)}`;
 		console.log(dedent`
                          ${help('CHAT GPT CODE REVIEWS')}
         -----------------------------------------------------------
         ${weather('PATH')} ${this.settings.REVIEW_DIRECTOR}
         -----------------------------------------------------------
         ${weather('OPEN_AI_CONTEXT')}:${error(false)}
-        ${weather('FILE_NAME_REVIEW')}:${fileReviewMasage}
-        ${weather('FOLDER_NAME_REVIEW')}:${folderReviewMasage}
         -----------------------------------------------------------
         Comand:
-        ${success('1')}: set a new path for the project folder
-        ${success('2')}: output using query
-        -----------------------------------------------------------
+        ${success('new')}: set a new path for the project folder
+        ${success('promt')}: output using system promt
+        ----------------------------------------------------------- 
        `);
+		this.promtsMessege();
 		return await this.readConsole();
 	}
 
@@ -55,10 +48,10 @@ export class ConsoleService {
 		return answer;
 	}
 
-	infoMessege(message: string): void {
+	infoMessege(title: string, message: string): void {
 		console.log(dedent`
         -----------------------------------------------------------
-        ${weather('new')}:  ${message};
+        ${weather(`${title}`)}:  ${message};
         -----------------------------------------------------------
        `);
 	}
@@ -79,5 +72,19 @@ export class ConsoleService {
 
 	close(close = false): void {
 		close ? this.consoleInterface.close() : null;
+	}
+
+	//	${success('0')}: folder and file name review
+
+	private promtsMessege(): void {
+		console.log(dedent`${success('0')}: folder and file name review
+		-----------------------------------------------------------`);
+		this.promts.map((e, index) => {
+			//	this.infoMessege(`${index}`, `${e.USER_PROMT}`);
+			console.log(dedent`
+			${success(`${index + 1}`)}: ${e.USER_PROMT}
+			-----------------------------------------------------------
+		   `);
+		});
 	}
 }
